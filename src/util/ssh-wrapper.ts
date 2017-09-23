@@ -16,7 +16,7 @@ const readFile = (filePath:string) => {
 }
 
 // Returns array of open SSH connections to all ip's found in the filePath
-export const createConnections = async(filePath?:string) => {
+export const openConnections = async(filePath?:string) => {
     let data
     if (filePath) {
         data = await readFile(filePath)
@@ -25,31 +25,47 @@ export const createConnections = async(filePath?:string) => {
     }
     const connections = JSON.parse(data).connections
 
-    connections.map(async (connection) => {
-        const { ip, username, password } = connection
-        return new SSH({
-            host: ip,
-            user: username,
-            pass: password
-        })
+    return connections.map(async (connection) => {
+        createNewConnection(connection)
+    })
+}
+
+export const createNewConnection = async (connInfo) => {
+    const { ip, username, password } = connInfo
+    return new SSH({
+        host: ip,
+        user: username,
+        pass: password
     })
 }
 
 // Closes the connections to all open connections
 export const closeConnections = async (connections) => {
-    connections.map((connection) => {
-        connection.end()
+    Promise.all(connections).then((allSSH) => {
+        allSSH.map((connection) => {
+            connection.end()
+        })
     })
 }
 
 // Executes a command on all connections
 export const execCommand = async ({ connections, command }) => {
-    connections.map((connection) => {
-        connection.exec(command), {
-            in: command,
-            out: stdout => console.log(stdout)
-        }
+    Promise.all(connections).then((sshConns) => {
+        sshConns.map((connection) => {
+            connection.exec((command), {
+                in: command,
+                out: console.log.bind(console)
+            }).start()
+        })
     })
 }
 
-export default { createConnections, execCommand, closeConnections }
+export const listenFor = async ({ connections, event, callback }) => {
+    Promise.all(connections).then((sshConns) => {
+        sshConns.map((connection) => {
+            connection.on(event, callback)
+        })
+    })
+}
+
+export default { createNewConnection, openConnections, execCommand, closeConnections }
