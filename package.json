@@ -1,0 +1,26 @@
+{
+  "name": "tnt_nodes",
+  "version": "1.0.0",
+  "description": "Scripts for TNT nodes",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mike-stupich/tnt_nodes.git"
+  },
+  "author": "Mike Stupich",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mike-stupich/tnt_nodes/issues"
+  },
+  "homepage": "https://github.com/mike-stupich/tnt_nodes#readme",
+  "dependencies": {
+    "simple-ssh": "^1.0.0",
+    "typescript": "^2.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "^8.0.30"
+  }
+}
