@@ -1,4 +1,4 @@
 node_modules
-resources/myconns.json
+src/resources/myconns.json
 **/*.map
 **/*.js
