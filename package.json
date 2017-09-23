@@ -4,7 +4,8 @@
   "description": "Scripts for TNT nodes",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,7 @@
   },
   "homepage": "https://github.com/mike-stupich/tnt_nodes#readme",
   "dependencies": {
+    "command-line-usage": "^4.0.1",
     "simple-ssh": "^1.0.0",
     "typescript": "^2.5.2"
   },

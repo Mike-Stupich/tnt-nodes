@@ -3,12 +3,14 @@
         {
             "ip":"123.456.7.8",
             "username": "user",
-            "password": "pass"
+            "password": "pass",
+            "address": "0x0088063e1748489d4a5d2cc63e50e3159c005fd4"
         },
         {
             "ip":"111.222.33.4",
             "username": "user",
-            "password": "pass"
+            "password": "pass",
+            "address": "0x0088063e1748489d4a5d2cc63e50e3159c005fd4"
         }
     ]
 }
