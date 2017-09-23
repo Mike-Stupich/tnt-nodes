@@ -1,0 +1,14 @@
+{
+    "connections": [
+        {
+            "ip":"123.456.7.8",
+            "username": "user",
+            "password": "pass"
+        },
+        {
+            "ip":"111.222.33.4",
+            "username": "user",
+            "password": "pass"
+        }
+    ]
+}
