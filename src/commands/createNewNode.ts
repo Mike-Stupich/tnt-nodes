@@ -1,6 +1,6 @@
-import createConnections from '../util/sshWrapper'
+import { createConnections, execCommand, closeConnections } from '../util/ssh-wrapper'
 
-const createNode = () => {
+const createNode = ([ip, user, pass, addr]) => {
     createConnections()
 }
 

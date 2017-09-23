@@ -1,4 +1,4 @@
-import createConnections from '../util/sshWrapper'
+import { createConnections, execCommand, closeConnections } from '../util/ssh-wrapper'
 
 const updateNodes = () => {
     createConnections()
