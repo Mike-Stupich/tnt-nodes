@@ -1,8 +1,9 @@
-import * as SSH from 'simple-ssh'
+import * as ssh2 from 'ssh2'
 import * as fs from 'fs'
 
 const DEFAULT_FILE_PATH = './src/resources/myconns.json'
 
+// Helper to read files
 const readFile = (filePath:string) => {
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, 'utf-8', ((err, data) => {
@@ -15,8 +16,19 @@ const readFile = (filePath:string) => {
     })
 }
 
+// Creates an SSH instance to a single node
+export const createNewConnection = async ({ ip, user, pass }) => {
+    const client = new ssh2.Client()
+    client.connect({
+            host: ip,
+            username: user,
+            password: pass
+        })
+    return client
+}
+
 // Returns array of open SSH connections to all ip's found in the filePath
-export const openConnections = async(filePath?:string) => {
+export const openAllConnections = async(filePath?: string) => {
     let data
     if (filePath) {
         data = await readFile(filePath)
@@ -26,46 +38,50 @@ export const openConnections = async(filePath?:string) => {
     const connections = JSON.parse(data).connections
 
     return connections.map(async (connection) => {
-        createNewConnection(connection)
+        const { ip, username, password } = connection
+        return createNewConnection(connection)
     })
 }
 
-export const createNewConnection = async (connInfo) => {
-    const { ip, username, password } = connInfo
-    return new SSH({
-        host: ip,
-        user: username,
-        pass: password
-    })
-}
-
-// Closes the connections to all open connections
-export const closeConnections = async (connections) => {
+// Closes all ssh connections
+export const closeAllConnections = async (connections) => {
     Promise.all(connections).then((allSSH) => {
         allSSH.map((connection) => {
-            connection.end()
+            closeConnection(connection)
         })
     })
+}
+
+// Close an ssh connection
+export const closeConnection = async (connection) => {
+    connection.end()
 }
 
 // Executes a command on all connections
-export const execCommand = async ({ connections, command }) => {
+export const execCommandAll = async ({ connections, command }) => {
     Promise.all(connections).then((sshConns) => {
         sshConns.map((connection) => {
-            connection.exec((command), {
-                in: command,
-                out: console.log.bind(console)
-            }).start()
+            execCommand({ connection, command })        
         })
     })
 }
 
-export const listenFor = async ({ connections, event, callback }) => {
-    Promise.all(connections).then((sshConns) => {
-        sshConns.map((connection) => {
-            connection.on(event, callback)
+// Execute a command on a connection
+export const execCommand = async ({ connection, command }) => {
+    connection.on('ready', () => {    
+        console.log('Client Ready')
+        connection.exec(command, {pty:true}, (err, output) => {
+            if (err) {
+                throw err
+            }
+            output.on('close', (code, signal) => {
+                console.log(`code ${code}, signal ${signal}`)
+                connection.end()
+            }).on('data', (data) => {
+                console.log(data.toString())
+            }).stderr.on('data', (data) => {
+                console.log('STDERR', data.toString())
+            })
         })
     })
 }
-
-export default { createNewConnection, openConnections, execCommand, closeConnections }

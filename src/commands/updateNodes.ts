@@ -1,9 +1,9 @@
-import { openConnections, execCommand, closeConnections } from '../util/ssh-wrapper'
+import { openAllConnections, execCommandAll, closeAllConnections } from '../util/ssh-wrapper'
 
 const updateNodes = async () => {
-    const conns = await openConnections()
+    const conns = await openAllConnections()
     const updateCommand = 'make down && git pull && make up'
-    await execCommand({ connections: conns, command: updateCommand })
+    await execCommandAll({ connections: conns, command: updateCommand })
 }
 
 export default updateNodes
